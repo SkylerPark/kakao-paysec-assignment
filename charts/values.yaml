@@ -1,0 +1,70 @@
+revisionHistoryLimit: 2
+restartPolicy: Always
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+ports:
+  api:
+    container:
+      port: 8080
+    service:
+      port: 80
+      protocol: TCP
+      type: NodePort
+  db:
+    container:
+      port: 3306
+    service:
+      port: 3306
+      protocol: TCP
+      type: ClusterIP
+
+image:
+  name: kakao-paysec
+  tag: latest
+  imagePullPolicy: IfNotPresent
+
+apiResources: {}
+# apiResources:
+#   requests:
+#     cpu: ""
+#     memory: ""
+#   limits:
+#     cpu: ""
+#     memory: ""
+dbResources: {}
+# dbResources:
+#   requests:
+#     cpu: ""
+#     memory: ""
+#   limits:
+#     cpu: ""
+#     memory: ""
+
+env:
+  javaOpts: "-XX:+UseParallelGC -XX:MaxRAMPercentage=75"
+  mysqlUser: petclinic
+  mysqlPassword: petclinic
+  mysqlRootPassword: root
+  mysqlDatabase: petclinic
+
+probeHealthCheck: /
+readinessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+startupProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3

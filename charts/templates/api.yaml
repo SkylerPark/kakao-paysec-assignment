@@ -1,0 +1,47 @@
+{{- $appName := include "apps.appName" . -}}
+{{- $appNamespace := include "apps.appNamespace" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $appName }}-api
+  namespace: {{ $appNamespace }}
+  labels:
+    app: {{ $appName }}-api
+spec:
+  selector:
+    matchLabels:
+      app: {{ $appName }}-api
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit | default 3 }}
+  template:
+    metadata:
+      labels:
+        app: {{ $appName }}-api
+    spec:
+      restartPolicy: {{ .Values.restartPolicy }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: {{ $appName }}-api
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+          command: ["java"]
+          args: ["-jar", "/app/ROOT.jar"]
+          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          {{- if .Values.apiResources }}
+          resources:
+            {{- toYaml .Values.apiResources | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.ports.api.container.port }}
+          startupProbe:
+          {{- include "apps.probeHealthCheck" . | nindent 12 }}
+          {{- toYaml .Values.startupProbe  | nindent 12 }}
+          readinessProbe:
+          {{- include "apps.probeHealthCheck" . | nindent 12 }}
+          {{- toYaml .Values.readinessProbe  | nindent 12 }}
+          livenessProbe:
+          {{- include "apps.probeHealthCheck" . | nindent 12 }}
+          {{- toYaml .Values.livenessProbe  | nindent 12 }}
+          env:
+            - name: JARA_OPTS
+              value: {{ .Values.env.javaOpts }}

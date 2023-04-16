@@ -1,0 +1,33 @@
+{{- $appName := include "apps.appName" . -}}
+{{- $appNamespace := include "apps.appNamespace" . -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $appName }}-api
+  namespace: {{ $appNamespace }}
+  labels:
+    app: {{ $appName }}-api
+spec:
+  type: {{ .Values.ports.api.service.type }}
+  ports:
+    - port: {{ .Values.ports.api.service.port }}
+      protocol: {{ .Values.ports.api.service.protocol }}
+      targetPort: {{ .Values.ports.api.container.port }}
+  selector:
+    app: {{ $appName }}-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $appName }}-db
+  namespace: {{ $appNamespace }}
+  labels:
+    app: {{ $appName }}-db
+spec:
+  type: {{ .Values.ports.api.service.type }}
+  ports:
+    - port: {{ .Values.ports.db.service.port }}
+      protocol: {{ .Values.ports.db.service.protocol }}
+      targetPort: {{ .Values.ports.db.container.port }}
+  selector:
+    app: {{ $appName }}-db

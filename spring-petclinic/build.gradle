@@ -44,7 +44,7 @@ dependencies {
 group = 'org.springframework.samples'
 version = '3.0.0.BUILD-SNAPSHOT'
 description = 'petclinic'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = '17'
 
 publishing {
     publications {
